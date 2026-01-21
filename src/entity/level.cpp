@@ -112,7 +112,6 @@ namespace rl
             this->add_child(projectile);
         }
     }
-
     [[signal_slot]]
     void Level::on_character_position_changed(const godot::Object* const node,
                                               godot::Vector2 location) const

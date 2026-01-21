@@ -114,7 +114,8 @@ namespace rl::inline utils
         using object_t = std::type_identity_t<TObject>;
         using signal_t = std::type_identity_t<signal_binding<object_t, SignalName>>;
         static inline constexpr std::string_view signal_name{ SignalName };
-        static inline std::vector<godot::PropertyInfo> signal_params{};
+        //static inline std::vector<godot::PropertyInfo> signal_params{};
+        static inline godot::LocalVector<godot::PropertyInfo> signal_params{};
 
         // even though we know what TObject is here (the class type adding the signal binding)
         // we can't call TObject::get_class_static() yet since this struct is instantiated before
@@ -141,24 +142,20 @@ namespace rl::inline utils
                 }
 
                 if constexpr (arg_count == 0)
-                    godot::ClassDB::add_signal(class_name.data(),
-                                               godot::MethodInfo(signal_name.data()));
+                    godot::ClassDB::add_signal(class_name.data(), godot::MethodInfo(signal_name.data()));
                 else
                 {
                     arg_types signal_args{};
 
                     std::apply(
                         [&](auto&&... arg) {
-                            signal_params = {
+                            signal_params = godot::LocalVector<godot::PropertyInfo>{
                                 variant_traits<decltype(arg)>::type_info::get_class_info()...
                             };
                         },
                         signal_args);
 
-                    godot::ClassDB::add_signal(
-                        class_name.data(),
-                        godot::MethodInfo(signal_name.data(),
-                                          std::forward<decltype(signal_params)>(signal_params)));
+                    godot::ClassDB::add_signal(class_name.data(), godot::MethodInfo(signal_name.data(), std::forward<decltype(signal_params)>(signal_params)) );
                 }
 
                 runtime_assert(signal_params.size() == arg_count);

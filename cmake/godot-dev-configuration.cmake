@@ -50,6 +50,7 @@ set(cpu_arch "x86_64")
 set(host_os_engine "${host_os}")
 if (APPLE)
     if ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "arm64")
+            message("I WAS HERE")
             set(cpu_arch "arm64")
     endif()
     # ${CMAKE_SYSTEM_NAME} returns Darwin, but the scons platform name will be macos
